@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <TextView
+        android:id="@+id/tv_device_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_power"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_device_info" />
+
+    <TextView
+        android:id="@+id/tv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_power" />
+
+    <TextView
+        android:id="@+id/tv_touch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_back" />
+
+    <TextView
+        android:id="@+id/tv_slide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_touch" />
+
+    <TextView
+        android:id="@+id/tv_psensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_slide" />
+
+    <TextView
+        android:id="@+id/tv_lsensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_psensor" />
+
+    <Button
+        android:id="@+id/bt_camera_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="获取Camera数据"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_lsensor" />
+
+
+    <TextView
+        android:id="@+id/tv_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/bt_camera_data"
+        app:layout_constraintStart_toEndOf="@+id/bt_camera_data"
+        app:layout_constraintTop_toTopOf="@+id/bt_camera_data"
+        tools:text="camera数据获取" />
+
+    <TextView
+        android:id="@+id/tv_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="光机亮度调整:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt_camera_data" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/lSenSor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:max="100"
+        app:layout_constraintTop_toTopOf="@+id/tv_light"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_light"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_light" />
+
+
+    <Button
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/bt_presentation"
+        android:text="双屏异显Demo"
+        app:layout_constraintTop_toBottomOf="@id/tv_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:text="初始化人脸车牌SDK"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt_presentation"
+        android:id="@+id/bt_sdk_init"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/bt_face"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/bt_presentation"
+        app:layout_constraintStart_toEndOf="@+id/bt_sdk_init"
+        android:text="开始人脸识别"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bt_plate"
+        app:layout_constraintTop_toBottomOf="@id/bt_presentation"
+        app:layout_constraintStart_toEndOf="@+id/bt_face"
+        android:text="开始车牌识别"/>
+
+
+    <ImageView
+        android:id="@+id/iv_crop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bt_face"
+        android:layout_marginStart="10dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"/>
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/iv_plate_crop"
+        app:layout_constraintStart_toEndOf="@id/iv_crop"
+        app:layout_constraintTop_toTopOf="@id/iv_crop"/>
+
+
+    <Button
+        app:layout_constraintTop_toBottomOf="@+id/iv_crop"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/bt_complete_demo"
+        android:text="完整Demo体验"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+    <com.serenegiant.usb.widget.UVCCameraTextureView
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
