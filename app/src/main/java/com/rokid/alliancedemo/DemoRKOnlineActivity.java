@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.jiangdg.usbcamera.RKGlassDevice;
 import com.jiangdg.usbcamera.callback.OnGlassConnectListener;
+import com.rokid.alliance.base.BaseLibrary;
 import com.rokid.alliance.base.hw.GlassInfo;
 import com.rokid.alliance.base.message.car.ReqCarRecognizeMessage;
 import com.rokid.alliance.base.message.car.RespCarRecognizeMessage;
@@ -56,6 +57,8 @@ public class DemoRKOnlineActivity extends AppCompatActivity {
 
         RKAlliance.getInstance().loadFaceModel(getApplicationContext(), null);
         RKAlliance.getInstance().loadLPRModel(getApplicationContext(), null);
+
+        BaseLibrary.initialize(getApplication());
         RKGlassUI.getInstance().initGlassUI(getApplicationContext());
 
 
