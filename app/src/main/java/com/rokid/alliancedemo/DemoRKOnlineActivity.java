@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.jiangdg.usbcamera.RKGlassDevice;
 import com.jiangdg.usbcamera.callback.OnGlassConnectListener;
 import com.rokid.alliance.base.BaseLibrary;
+import com.rokid.alliance.base.annotation.RecognizeType;
 import com.rokid.alliance.base.hw.GlassInfo;
 import com.rokid.alliance.base.message.car.ReqCarRecognizeMessage;
 import com.rokid.alliance.base.message.car.RespCarRecognizeMessage;
@@ -41,7 +42,6 @@ public class DemoRKOnlineActivity extends AppCompatActivity {
     private void init() {
 
 
-
         RKGlassDevice.RKGlassDeviceBuilder.buildRKGlassDevice().build().initUsbDevice(this, findViewById(R.id.uvc_preview), new OnGlassConnectListener() {
             @Override
             public void onGlassConnected(UsbDevice usbDevice, GlassInfo glassInfo) {
@@ -59,6 +59,7 @@ public class DemoRKOnlineActivity extends AppCompatActivity {
         RKAlliance.getInstance().loadLPRModel(getApplicationContext(), null);
 
         BaseLibrary.initialize(getApplication());
+        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, true);//首次调用必须在initGlassUI函数被调用之前 后续切换识别模式正常调用即可
         RKGlassUI.getInstance().initGlassUI(getApplicationContext());
 
 
@@ -75,7 +76,7 @@ public class DemoRKOnlineActivity extends AppCompatActivity {
                 faceInfoBean.setCardno("xxxxxxxxxxxxxxxx");  //在线识别 人员身份证信息
                 faceInfoBean.setTag("上访人员");    //在线识别 人员标签信息，比如"逃犯"/"可疑人员"/"上访人员"
                 faceInfoBean.setAlarm(true);  //是否开启警报音
-                Bitmap bm = BitmapUtils.bytes2bitmap(reqOnlineSingleFaceMessage.getFaceImage(), reqOnlineSingleFaceMessage.getWidth(),reqOnlineSingleFaceMessage.getHeight());
+                Bitmap bm = BitmapUtils.bytes2bitmap(reqOnlineSingleFaceMessage.getFaceImage(), reqOnlineSingleFaceMessage.getWidth(), reqOnlineSingleFaceMessage.getHeight());
                 faceInfoBean.setFaceImage(ImageUtils.bitmap2Bytes(bm));   //在线识别后需要眼镜端展示的人员头像图片数据，此处只是mock了从眼镜端截取的图片数据
                 respOnlineSingleFaceMessage.setTrackId(reqOnlineSingleFaceMessage.getTrackId());
                 respOnlineSingleFaceMessage.setFaceInfoBean(faceInfoBean);
