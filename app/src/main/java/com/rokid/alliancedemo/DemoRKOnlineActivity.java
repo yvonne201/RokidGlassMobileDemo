@@ -19,10 +19,10 @@ import com.rokid.alliance.base.message.face.ReqOnlineSingleFaceMessage;
 import com.rokid.alliance.base.message.face.RespOnlineSingleFaceMessage;
 import com.rokid.alliance.base.utils.BitmapUtils;
 import com.rokid.glass.m_glass.RKGlassUI;
-import com.rokid.glass.m_glass.online.OnlineRecgHelper;
-import com.rokid.glass.m_glass.online.OnlineRequest;
 import com.rokid.mcui.utils.ImageUtils;
 import com.rokid.mobile.magic.RKAlliance;
+import com.rokid.mobile.magic.online.OnlineRecgHelper;
+import com.rokid.mobile.magic.online.OnlineRequest;
 
 /**
  * 在线人脸识别demo

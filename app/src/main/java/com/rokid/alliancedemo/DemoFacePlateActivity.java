@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.jiangdg.usbcamera.RKGlassDevice;
 import com.jiangdg.usbcamera.callback.OnGlassConnectListener;
+import com.rokid.alliance.base.BaseLibrary;
 import com.rokid.alliance.base.hw.GlassInfo;
 import com.rokid.alliance.base.model.RKFaceDO;
 import com.rokid.alliance.base.model.RKFaceModel;
@@ -58,6 +59,8 @@ public class DemoFacePlateActivity extends AppCompatActivity {
     };
 
     private void init() {
+
+        BaseLibrary.initialize(getApplication());
 
         RKGlassDevice.RKGlassDeviceBuilder.buildRKGlassDevice().build().initUsbDevice(this, mBinding.uvcPreview, new OnGlassConnectListener() {
             @Override
