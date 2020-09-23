@@ -54,13 +54,14 @@ public class DemoRKOnlineActivity extends AppCompatActivity {
             }
         });
 
+        BaseLibrary.initialize(getApplication());
+        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, true);//首次调用必须在initGlassUI函数被调用之前 后续切换识别模式正常调用即可
+        RKGlassUI.getInstance().initGlassUI(getApplicationContext());
 
         RKAlliance.getInstance().loadFaceModel(getApplicationContext(), null);
         RKAlliance.getInstance().loadLPRModel(getApplicationContext(), null);
 
-        BaseLibrary.initialize(getApplication());
-        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, true);//首次调用必须在initGlassUI函数被调用之前 后续切换识别模式正常调用即可
-        RKGlassUI.getInstance().initGlassUI(getApplicationContext());
+
 
 
         OnlineRecgHelper.getInstance().init(new OnlineRequest() {
