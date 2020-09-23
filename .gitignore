@@ -15,4 +15,3 @@
 .idea
 gradle/
 gradlew*
-gradle.properties
