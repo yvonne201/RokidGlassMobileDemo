@@ -1,5 +1,6 @@
 package com.rokid.alliancedemo;
 
+import android.app.Activity;
 import android.app.Presentation;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
@@ -33,19 +34,19 @@ public class DemoPresentationActivity extends AppCompatActivity {
     private DisplayManager.DisplayListener displayListener = new DisplayManager.DisplayListener() {
         @Override
         public void onDisplayAdded(int displayId) {
-            if (currentDisplayId != displayId) {
-                showCurrentDisplay();
-            }
+            showCurrentDisplay();
         }
 
         @Override
         public void onDisplayRemoved(int displayId) {
 
+            showCurrentDisplay();
         }
 
         @Override
         public void onDisplayChanged(int displayId) {
 
+            showCurrentDisplay();
         }
     };
 

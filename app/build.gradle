@@ -51,6 +51,5 @@ dependencies {
     implementation 'com.rokid.alliance.magicsdk:magicsdk:1.1.7'//使用Rokid人脸车牌识别必须依赖
 
 
-
     implementation 'com.rokid.alliance.glassui:glassui:1.1.7'// rokid人脸、车牌识别双屏异显demo
 }
