@@ -4,18 +4,23 @@ import android.app.Presentation;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.TextUtils;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.rokid.glass.m_glass.RKRecogPresentation;
 import com.rokid.mcui.utils.Logger;
+
+import java.util.LinkedList;
 
 /**
  * 双屏异显demo
@@ -23,41 +28,88 @@ import com.rokid.mcui.utils.Logger;
 public class DemoPresentationActivity extends AppCompatActivity {
 
     private DemoPresentation demoPresentation;
+    private LinkedList<DemoPresentation> mShowList = new LinkedList<>();
+    private int currentDisplayId;
+    private DisplayManager.DisplayListener displayListener = new DisplayManager.DisplayListener() {
+        @Override
+        public void onDisplayAdded(int displayId) {
+            if (currentDisplayId != displayId) {
+                showCurrentDisplay();
+            }
+        }
+
+        @Override
+        public void onDisplayRemoved(int displayId) {
+
+        }
+
+        @Override
+        public void onDisplayChanged(int displayId) {
+
+        }
+    };
+
+    private void showCurrentDisplay() {
+        Display[] presentationDisplays = ((DisplayManager)getSystemService(Context.DISPLAY_SERVICE)).getDisplays("android.hardware.display.category.PRESENTATION");
+        if (presentationDisplays.length == 0) {
+            if (null != demoPresentation && demoPresentation.isShowing()) demoPresentation.dismiss();
+            return;
+        }
+        if (presentationDisplays[0].getDisplayId() == this.currentDisplayId) {
+
+            if (null != demoPresentation) demoPresentation.show();
+        } else {
+            if (null != demoPresentation&& demoPresentation.isShowing()) {
+                demoPresentation.dismiss();
+                String text = demoPresentation.getText();
+                demoPresentation = new DemoPresentation(this, presentationDisplays[0]);
+                if (!TextUtils.isEmpty(text)) {
+                    demoPresentation.setText(text);
+                }
+                demoPresentation.show();
+            }
+
+
+        }
+
+        currentDisplayId= presentationDisplays[0].getDisplayId();
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo_presentation);
 
-        FrameLayout decorView = (FrameLayout) getWindow().getDecorView();
-        showViewInfo(decorView);
+        findViewById(R.id.bt_first).setOnClickListener(v -> {
+            showPresentation("第一个");
+        });
 
-        showPresentation();
-    }
+        findViewById(R.id.bt_second).setOnClickListener(v -> {
 
-    private void showViewInfo(View parent) {
-        if (parent instanceof ViewParent) {
-            for (int i = 0; i < ((ViewGroup) parent).getChildCount(); i++) {
-                View childAt = ((ViewGroup) parent).getChildAt(i);
-                showViewInfo(childAt);
-            }
-        } else {
-            if (parent instanceof TextView) {
-                Logger.i("instance of textview:", ((TextView) parent).getText().toString());
+            showPresentation("第二个");
+        });
 
-                if (parent.hasOnClickListeners()) {
-                    Logger.i("has onclick listener");
+        findViewById(R.id.bt_dismiss).setOnClickListener(v -> {
+            if (mShowList.size() > 0) {
+                DemoPresentation demoPresentation = mShowList.removeLast();
+                if (null != demoPresentation && demoPresentation.isShowing()) {
+                    demoPresentation.dismiss();
                 }
             }
-        }
+        });
     }
 
 
     /**
      * 这里仅仅简单的在眼镜上显示一个Button
      * 关于Presentation的使用方式请参考Android开发者网站(https://developer.android.com/reference/android/app/Presentation)学习
+     * TODO 注意  这里由于主题是透明的，因此多个Presentation同时显示会重叠显示
      */
     public static class DemoPresentation extends Presentation {
+
+        private String text;
 
         public DemoPresentation(Context outerContext, Display display) {
             this(outerContext, display, R.style.GlassTheme);
@@ -74,12 +126,7 @@ public class DemoPresentationActivity extends AppCompatActivity {
 
             // Inflate the layout.
             setContentView(R.layout.presentation_demo_layout);
-            findViewById(R.id.bt_pre).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Logger.i("Presentation button click");
-                }
-            });
+
 
             findViewById(R.id.bt_first).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -99,77 +146,46 @@ public class DemoPresentationActivity extends AppCompatActivity {
                     Logger.i("Presentation button click second");
                 }
             });
-            FrameLayout decorView = (FrameLayout) getWindow().getDecorView();
-            showViewInfo(decorView);
 
-            View focus = decorView.findFocus();
-            if (null != focus) {
-                if (focus instanceof TextView) {
-                    Logger.i("Presentation focus view is textview:", ((TextView) focus).getText().toString());
-                }
-            }
+            ((TextView) findViewById(R.id.tv_pre)).setText(text);
+
         }
 
-        private int count = 1;
+        public String getText() {
+            return text;
+        }
 
-        private void showViewInfo(View parent) {
-            if (parent instanceof ViewParent) {
-                for (int i = 0; i < ((ViewGroup) parent).getChildCount(); i++) {
-                    View childAt = ((ViewGroup) parent).getChildAt(i);
-                    showViewInfo(childAt);
-                }
-            } else {
-                if (parent instanceof TextView) {
-                    Logger.i("Presentation instance of textview:", ((TextView) parent).getText().toString());
 
-                    if (parent.hasOnClickListeners()) {
-                        Logger.i("Presentation has onclick listener");
-                        parent.callOnClick();
-                        final ViewTreeObserver observer = parent.getViewTreeObserver();
 
-                        observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                            @Override
-                            public boolean onPreDraw() {
-                                float x = parent.getX();
-                                float y = parent.getY();
-                                Logger.i("onPreDraw view " + x + " y " + y);
-                                if (observer.isAlive()) {
-                                    observer.removeOnPreDrawListener(this);
-                                }
-                                ViewTreeObserver newObserver = parent.getViewTreeObserver();
-                                newObserver.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
-                                    @Override
-                                    public void onDraw() {
-                                        if (newObserver.isAlive()) {
-                                            newObserver.removeOnDrawListener(this);
-                                        }
-                                        TextView textView = new TextView(getContext());
-                                        textView.setText(String.valueOf(count++));
-                                        textView.setX(x);
-                                        textView.setY(y);
-                                        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(20, 20);
-                                        getWindow().addContentView(textView, params);
-                                    }
-                                });
-                                return false;
-                            }
-                        });
-                    }
-                }
-            }
+        public void setText(String text) {
+            this.text = text;
         }
     }
 
 
-    private void showPresentation() {
+    private Display display;
+
+    private void showPresentation(String text) {
+        if (null == display) {
+            display = getDisplay();
+        }
+        if (display == null) {
+            Toast.makeText(this, "没有找到外接显示屏", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        demoPresentation = new DemoPresentation(this, display);
+        demoPresentation.setText(text);
+        demoPresentation.show();
+        mShowList.add(demoPresentation);
+    }
+
+    private Display getDisplay() {
         DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         if (null == dm) throw new RuntimeException("Request DisplayManager failed");
         Display[] displays = dm.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION);
-        if (displays.length > 0) {
-            Display display = displays[0];
-            demoPresentation = new DemoPresentation(this, display);
-            demoPresentation.show();
-        }
+        dm.registerDisplayListener(displayListener, new Handler());
+        return null != displays && displays.length > 0 ? displays[0] : null;
     }
 
     @Override

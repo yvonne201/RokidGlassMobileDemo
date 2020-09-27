@@ -11,8 +11,30 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="双屏异显"
+        android:text="双屏异显Demo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <Button
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/bt_first"
+        android:text="显示第一个presentation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        app:layout_constraintTop_toBottomOf="@+id/bt_first"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="显示第二个presentation"
+        android:id="@+id/bt_second"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bt_dismiss"
+        app:layout_constraintTop_toBottomOf="@+id/bt_second"
+        android:text="隐藏当前Presentation"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
