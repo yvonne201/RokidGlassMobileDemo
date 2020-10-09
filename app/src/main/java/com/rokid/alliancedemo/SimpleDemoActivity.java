@@ -121,9 +121,13 @@ public class SimpleDemoActivity extends AppCompatActivity {
 
         });
 
-
         findViewById(R.id.bt_audio_record).setOnClickListener( v -> {
-            startActivity(new Intent(this, DemoAudioRecordActivity.class));//录音Demo
+            startActivity(new Intent(this, DemoAudioRecordActivity.class));
+        });//录音Demo
+
+
+        findViewById(R.id.bt_offline_recog).setOnClickListener(v -> {
+            startActivity(new Intent(this,DemoRKOfflineActivity.class));// Rokid离线人脸识别使用Demo
         });
 
     }
