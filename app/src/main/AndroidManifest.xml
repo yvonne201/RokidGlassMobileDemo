@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DemoCaptureActivity"></activity>
-        <activity android:name=".DemoAudioRecordActivity" />
+        <activity android:name=".DemoAudioRecordActivity"></activity>
+        <activity android:name=".DemoCaptureActivity" />
         <activity android:name=".DemoRKOnlineActivity" />
         <activity android:name=".DemoFacePlateActivity" />
         <activity android:name=".DemoPresentationActivity" />
