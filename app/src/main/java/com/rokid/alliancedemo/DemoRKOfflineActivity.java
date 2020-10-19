@@ -1,15 +1,14 @@
 package com.rokid.alliancedemo;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.hardware.usb.UsbDevice;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.service.autofill.UserData;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
@@ -27,6 +26,9 @@ import com.rokid.alliance.base.hw.GlassInfo;
 import com.rokid.alliance.base.model.RKFaceDO;
 import com.rokid.alliance.base.model.RKFaceModel;
 import com.rokid.alliance.base.model.face.database.UserInfo;
+import com.rokid.alliance.base.pc.ErrorCode;
+import com.rokid.alliance.base.pc.bean.DeployTask;
+import com.rokid.alliance.base.pc.bean.DeployTaskListInfo;
 import com.rokid.alliance.base.pc.bean.ExtractFeatResult;
 import com.rokid.alliance.base.pc.bean.FeatFileInfo;
 import com.rokid.alliance.base.pc.bean.Person;
@@ -39,7 +41,6 @@ import com.rokid.mobile.magic.callback.PreparedListener;
 import com.rokid.mobile.magic.database.FaceDataManager;
 import com.rokid.mobile.magic.database.FaceIdManager;
 import com.serenegiant.usb.common.AbstractUVCCameraHandler;
-import com.serenegiant.usb.widget.UVCCameraTextureView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,11 +58,13 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
 
     private EditText etName, etIdCard;
     private ImageView imageHead;
-    private  UVCCameraTextureView mPreView;
-    private TextView tvNameResult, tvCardResult;
+    private TextView tvNameResult, tvCardResult, tvDBdata;
     private ImageView imageHeadResult;
     private Uri faceUri;
 
+    /**
+     * 预览的监听回调
+     */
     final AbstractUVCCameraHandler.OnPreViewResultListener onPreviewFrameListener = new AbstractUVCCameraHandler.OnPreViewResultListener() {
         @Override
         public void onPreviewResult(byte[] bytes) {
@@ -101,40 +104,52 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo_r_k_offline);
         initView();
-        initGlass();
+        initOfflineGlass();
     }
 
 
     /**
-     * 初始化UI空间
+     * 初始化UI
      */
     private void initView() {
         etName = findViewById(R.id.et_name);
         etIdCard = findViewById(R.id.et_idcard);
         imageHead = findViewById(R.id.iv_face_image);
-
         tvNameResult = findViewById(R.id.tv_name_result);
         tvCardResult = findViewById(R.id.tv_card_result);
         imageHeadResult = findViewById(R.id.img_head_result);
-        mPreView = findViewById(R.id.uvc_preview);
+
+        tvDBdata = findViewById(R.id.tv_db_data);
+
         imageHead.setOnClickListener(v -> {
             importPictures();
         });
         findViewById(R.id.btn_add_face).setOnClickListener(v -> {
-            addImportData();
+            addData();
+        });
+
+        findViewById(R.id.btn_query).setOnClickListener(v -> {
+            queryData();
+        });
+
+        findViewById(R.id.btn_update).setOnClickListener(v -> {
+            updateData();
+        });
+
+        findViewById(R.id.btn_delete).setOnClickListener(v -> {
+            deleteData();
         });
     }
 
 
     /**
-     * 初始化Glass
+     * 初始化离线识别
      */
-    private void initGlass() {
+    private void initOfflineGlass() {
         BaseLibrary.initialize(getApplication());
 
         // 初始化usb连接设备，mpreView不能为空，如不想见可设置view为1dp大小
-
-        RKGlassDevice.RKGlassDeviceBuilder.buildRKGlassDevice().build().initUsbDevice(this, mPreView, new OnGlassConnectListener() {
+        RKGlassDevice.RKGlassDeviceBuilder.buildRKGlassDevice().build().initUsbDevice(this, findViewById(R.id.uvc_preview), new OnGlassConnectListener() {
             @Override
             public void onGlassConnected(UsbDevice usbDevice, GlassInfo glassInfo) {
 
@@ -168,8 +183,6 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
         RKAlliance.getInstance().registerFaceListener(faceCallback);
     }
 
-
-
     /**
      * 选择导入的图片
      */
@@ -186,11 +199,75 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
         startActivityForResult(imageIntent, CODE_IMAGE);
     }
 
+
     /**
-     * 保存离线人脸数据
+     * 查询数据
      */
-    @SuppressLint("ShowToast")
-    private void addImportData() {
+    private void queryData() {
+        // 获取离线数据库保存的数据总数
+        int dataCount = FaceIdManager.getInstance().getAllUserNum();
+
+        // 关键词[关键词是根据姓名或者身份证号信息进行模糊查询],数据库起始位置，查询的数量
+        DeployTaskListInfo deployTaskList = FaceDataManager.getInstance().getDeployTaskListByOffset(null, 0, dataCount);
+        List<DeployTask> deployTasks = deployTaskList.getDeployTasks();
+
+        StringBuffer stringBuffer = new StringBuffer();
+        for (DeployTask deployTask : deployTasks) {
+            // 查询到的姓名,身份证号
+            stringBuffer.append(deployTask.getName() + "," + deployTask.getCardNo() +  "\n");
+            // 根据特征id 来返回用户图片；【特征id为人脸图片存入数据库时自动生成的】
+            Bitmap bitmap = FaceIdManager.getInstance().getUserImageByFid(deployTask.getCoverId());
+        }
+        tvDBdata.setText("数据库查询结果为：：\n " + stringBuffer.toString());
+    }
+
+    /**
+     * 更新数据
+     */
+    private void updateData() {
+        // demo默认只修改第一条数据
+        DeployTaskListInfo deployTaskList = FaceDataManager.getInstance().getDeployTaskListByOffset(null, 0, 1);
+        List<DeployTask> deployTasks = deployTaskList.getDeployTasks();
+        if (deployTasks.size()>0){
+            Person person = new Person();
+            person.setName("新名字");
+            person.setCardNo("77");
+            // uuid 为数据添加时自动生成的唯一随机id；
+            String uuid = deployTasks.get(0).getId();
+            // 更新数据, 【如需要修改图片，则可以参考addData()中的featFileInfos 作为第三个参数传入】
+            ErrorCode errorCode = FaceDataManager.getInstance().updatePerson(uuid, person, null);
+            if (errorCode.getCode() == 0) {
+                Toast.makeText(this, "离线人脸数据添加成功", Toast.LENGTH_LONG).show();
+                queryData();
+            }
+        }
+    }
+
+    /**
+     * 删除数据
+     */
+    private void deleteData() {
+        List<String> deleteUidList = new ArrayList<>();
+
+        DeployTaskListInfo deployTaskList = FaceDataManager.getInstance().getDeployTaskListByOffset(null, 0, 1);
+        List<DeployTask> deployTasks = deployTaskList.getDeployTasks();
+        for (DeployTask item: deployTasks) {
+            // uuid 为数据添加时自动生成的唯一随机id；
+            deleteUidList.add(item.getId());
+        }
+
+        ErrorCode errorCode = FaceDataManager.getInstance().deletePersons(deleteUidList);
+        if (errorCode.getCode() == 0){
+            Toast.makeText(this, "离线人脸数据删除成功", Toast.LENGTH_LONG).show();
+            queryData();
+        }
+    }
+
+
+    /**
+     * 添加离线人脸数据
+     */
+    private void addData() {
         if (TextUtils.isEmpty(etName.getText().toString()) || TextUtils.isEmpty(etIdCard.getText().toString())) {
             Toast.makeText(this, "姓名和身份证信息不能为空!!! ", Toast.LENGTH_LONG).show();
             return;
@@ -247,8 +324,6 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
 
         RKAlliance.getInstance().registerFaceListener(faceCallback);
     }
-
-
 
 
     @Override

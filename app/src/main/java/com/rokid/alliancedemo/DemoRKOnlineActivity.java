@@ -35,35 +35,45 @@ public class DemoRKOnlineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo_r_k_online);
 
-        init();
+        initOnlineRecog();
 
     }
 
-    private void init() {
-
-
+    /**
+     * 在线识别
+     */
+    private void initOnlineRecog() {
+        // initUsb设备，需要传入CameraViewInterface，如果不需要该view可见，可以将其宽高大小设置为1dp
         RKGlassDevice.RKGlassDeviceBuilder.buildRKGlassDevice().build().initUsbDevice(this, findViewById(R.id.uvc_preview), new OnGlassConnectListener() {
             @Override
             public void onGlassConnected(UsbDevice usbDevice, GlassInfo glassInfo) {
-
+                // 眼镜连接成功回调
             }
 
             @Override
             public void onGlassDisconnected() {
-
+                // 眼镜断开连接回调
             }
         });
 
         BaseLibrary.initialize(getApplication());
-        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, true);//首次调用必须在initGlassUI函数被调用之前 后续切换识别模式正常调用即可
+
+        // 设置识别类型,以及是否为在线模式
+        // 识别类型支持：：
+        // RecognizeType.IS_SINGLE_RECOGNIZE：单人识别
+        // RecognizeType.IS_MULTI_RECOGNIZE：多人识别
+        // RecognizeType.IS_PLATE_RECOGNIZE：车牌识别
+
+        //首次调用必须在initGlassUI函数被调用之前 后续切换识别模式正常调用即可
+        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, true);
         RKGlassUI.getInstance().initGlassUI(getApplicationContext());
 
+        // 加载人脸模型
         RKAlliance.getInstance().loadFaceModel(getApplicationContext(), null);
+        // 加载车牌模型
         RKAlliance.getInstance().loadLPRModel(getApplicationContext(), null);
 
-
-
-
+        // 人脸车牌在线识别监听返回结果
         OnlineRecgHelper.getInstance().init(new OnlineRequest() {
             @Override
             public void sendFaceInfo(ReqOnlineSingleFaceMessage reqOnlineSingleFaceMessage) {
