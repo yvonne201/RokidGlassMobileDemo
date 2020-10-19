@@ -34,6 +34,7 @@ import com.rokid.alliance.base.pc.bean.FeatFileInfo;
 import com.rokid.alliance.base.pc.bean.Person;
 import com.rokid.alliance.base.utils.BitmapUtils;
 import com.rokid.alliancedemo.util.Utils;
+import com.rokid.glass.m_glass.RKGlassUI;
 import com.rokid.mcui.utils.Logger;
 import com.rokid.mobile.magic.RKAlliance;
 import com.rokid.mobile.magic.callback.Callback;
@@ -147,6 +148,7 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
      */
     private void initOfflineGlass() {
         BaseLibrary.initialize(getApplication());
+        RKGlassUI.getInstance().initGlassUI(getApplicationContext());
 
         // 初始化usb连接设备，mpreView不能为空，如不想见可设置view为1dp大小
         RKGlassDevice.RKGlassDeviceBuilder.buildRKGlassDevice().build().initUsbDevice(this, findViewById(R.id.uvc_preview), new OnGlassConnectListener() {
