@@ -16,6 +16,7 @@
         <activity android:name=".DemoPresentationActivity" />
         <activity android:name=".DemoGlassActivity" />
         <activity android:name=".DemoRKOfflineActivity"/>
+        <activity android:name=".DemoRKOfflinePlateActivity"/>
         <activity android:name=".SimpleDemoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

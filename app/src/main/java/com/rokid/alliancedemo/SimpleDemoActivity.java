@@ -126,10 +126,13 @@ public class SimpleDemoActivity extends AppCompatActivity {
         });//录音Demo
 
 
-        findViewById(R.id.bt_offline_recog).setOnClickListener(v -> {
+        findViewById(R.id.bt_offline_face_recog).setOnClickListener(v -> {
             startActivity(new Intent(this,DemoRKOfflineActivity.class));// Rokid离线人脸识别使用Demo
         });
 
+        findViewById(R.id.bt_offline_plate_recog).setOnClickListener(v -> {
+            startActivity(new Intent(this,DemoRKOfflinePlateActivity.class)); // Rokid离线车牌识别Demo
+        });
     }
 
 

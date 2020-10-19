@@ -51,8 +51,17 @@
         android:layout_marginTop="10dp"
         app:layout_constraintTop_toBottomOf="@+id/bt_online_recg"
         app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/bt_offline_recog"
+        android:id="@+id/bt_offline_face_recog"
         android:text="离线人脸识别demo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/bt_offline_face_recog"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/bt_offline_plate_recog"
+        android:text="离线车牌识别demo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -61,7 +70,7 @@
 
     <Button
         android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/bt_offline_recog"
+        app:layout_constraintTop_toBottomOf="@+id/bt_offline_plate_recog"
         app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/bt_audio_record"
         android:text="录音Demo"
