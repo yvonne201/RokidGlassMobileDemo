@@ -46,10 +46,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 
-    implementation 'com.rokid.alliance.usbcamera:usbcamera:1.1.7'//必须依赖
+    implementation 'com.rokid.alliance.usbcamera:usbcamera:1.1.9'//必须依赖
 
-    implementation 'com.rokid.alliance.magicsdk:magicsdk:1.1.7'//使用Rokid人脸车牌识别必须依赖
+    implementation 'com.rokid.alliance.magicsdk:magicsdk:1.1.9'//使用Rokid人脸车牌识别必须依赖
 
 
-    implementation 'com.rokid.alliance.glassui:glassui:1.1.7'// rokid人脸、车牌识别双屏异显demo
+    implementation 'com.rokid.alliance.glassui:glassui:1.1.9'// rokid人脸、车牌识别双屏异显demo
+
+
 }

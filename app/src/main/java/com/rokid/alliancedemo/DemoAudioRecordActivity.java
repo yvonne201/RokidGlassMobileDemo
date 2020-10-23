@@ -2,15 +2,7 @@ package com.rokid.alliancedemo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.hardware.usb.UsbDevice;
-import android.media.AudioAttributes;
-import android.media.AudioAttributes.Builder;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioRecord;
-import android.media.AudioTrack;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import androidx.databinding.DataBindingUtil;
 
@@ -23,10 +15,10 @@ import com.rokid.alliancedemo.util.AudioTrackManager;
 
 import java.io.File;
 
-import static android.media.AudioAttributes.CONTENT_TYPE_MUSIC;
-import static android.media.AudioAttributes.USAGE_MEDIA;
-import static android.media.AudioTrack.MODE_STREAM;
 
+/**
+ * 注意 Android10以下无法进行多路Mic数据采集，只能多路共用一个AudioRecord，maven库中已经提供了一个解决方案{@link com.rokid.alliance.base.audiorecord.RKAudioRecordManager}
+ */
 public class DemoAudioRecordActivity extends AppCompatActivity {
 
     ActivityDemoAudioRecordBinding mBinding;
@@ -81,8 +73,9 @@ public class DemoAudioRecordActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onDestroy(){
-        if (isRecording){
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isRecording) {
             mRecorder.release();
         }
         RKGlassDevice.getInstance().deInit();
