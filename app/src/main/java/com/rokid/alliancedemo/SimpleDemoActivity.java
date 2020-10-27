@@ -133,6 +133,10 @@ public class SimpleDemoActivity extends AppCompatActivity {
         findViewById(R.id.bt_offline_plate_recog).setOnClickListener(v -> {
             startActivity(new Intent(this,DemoRKOfflinePlateActivity.class)); // Rokid离线车牌识别Demo
         });
+
+        findViewById(R.id.bt_voice_command).setOnClickListener( v -> {
+            startActivity(new Intent(this, RKVoiceCommandActivity.class));//Rokid离线语音Demo
+        });
     }
 
 

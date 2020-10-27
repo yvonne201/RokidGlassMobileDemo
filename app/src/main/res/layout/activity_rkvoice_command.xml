@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RKVoiceCommandActivity">
+    
+    
+
+    <EditText
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:hint="指令词"
+        tools:text="指令词"
+        android:id="@+id/et_word"/>
+
+    <EditText
+        app:layout_constraintStart_toEndOf="@id/et_word"
+        app:layout_constraintTop_toTopOf="parent"
+        android:hint="拼音"
+        android:id="@+id/et_pinyin"
+        android:layout_width="@dimen/size_100_dp"
+        android:layout_height="wrap_content"/>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/et_pinyin"
+        android:id="@+id/bt_delete"
+        android:text="删除"
+        android:layout_width="@dimen/size_100_dp"
+        android:layout_height="wrap_content"/>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        app:layout_constraintStart_toEndOf="@+id/bt_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="添加"
+        android:id="@+id/bt_add"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bt_replace"
+        app:layout_constraintTop_toBottomOf="@+id/bt_add"
+        android:text="替换激活词"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        app:layout_constraintStart_toEndOf="@+id/bt_replace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bt_init"
+        app:layout_constraintTop_toBottomOf="@+id/bt_add"
+        android:text="初始化语音"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bt_uninit"
+        app:layout_constraintStart_toEndOf="@+id/bt_init"
+        app:layout_constraintTop_toBottomOf="@+id/bt_add"
+        android:text="释放语音"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:text="当前激活词"
+        android:id="@+id/tv_current"
+        app:layout_constraintTop_toBottomOf="@+id/bt_init"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.zhy.view.flowlayout.TagFlowLayout
+        android:layout_width="match_parent"
+        android:id="@+id/flowLayout"
+        app:layout_constraintTop_toBottomOf="@+id/tv_current"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="0dp"/>
+
+
+    <com.serenegiant.usb.widget.UVCCameraTextureView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/camera_view"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

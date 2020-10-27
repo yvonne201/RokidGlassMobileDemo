@@ -53,5 +53,8 @@ dependencies {
 
     implementation 'com.rokid.alliance.glassui:glassui:1.1.9'// rokid人脸、车牌识别双屏异显demo
 
+    implementation 'com.rokid.alliance.voicecommand:voicecommand:1.1.9'//离线指令
+
+    implementation 'com.hyman:flowlayout-lib:1.1.2'
 
 }
