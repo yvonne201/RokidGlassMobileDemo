@@ -79,8 +79,11 @@ public class DemoFacePlateActivity extends AppCompatActivity {
 
         /**
          * TODO
+         * roi矩形区域是最终会进行人脸检测识别的区域，因此如果是多人识别，例如使用的Camera分辨率为1080p 那么这里的roi应该是new Rect(0, 0, 1920, 1080) 如果分辨率是720p 则roi应该是new Rect(0, 0, 1280, 720) 以此类推
+         *
+         * 如果是单人识别 根据自己需要识别的区域 确定自己的roi区域和大小
          */
-        Rect roi = getRoi();
+        Rect roi = new Rect(0, 0, 1920, 1080);
 
         /**
          * 初始化sdk 人脸sdk和车牌sdk可以分别进行初始化
@@ -163,6 +166,10 @@ public class DemoFacePlateActivity extends AppCompatActivity {
     };
 
 
+    /**
+     *
+     * @return
+     */
     private Rect getRoi() {
         Rect roiRect = null;
         if (CameraParams.PREVIEW_WIDTH == 1280) {
