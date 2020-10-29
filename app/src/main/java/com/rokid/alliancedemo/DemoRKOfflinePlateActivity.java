@@ -282,5 +282,7 @@ public class DemoRKOfflinePlateActivity extends AppCompatActivity {
         RKAlliance.getInstance().releasePlateSdk();
         RKGlassDevice.getInstance().removeOnPreviewFrameListener(onPreviewFrameListener);
         RKGlassDevice.getInstance().deInit();
+        RKGlassUI.getInstance().removeGlassUI();
+
     }
 }

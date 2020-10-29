@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.jiangdg.usbcamera.RKGlassDevice;
 import com.jiangdg.usbcamera.callback.OnGlassConnectListener;
 import com.rokid.alliance.base.BaseLibrary;
+import com.rokid.alliance.base.annotation.RecognizeType;
 import com.rokid.alliance.base.hw.GlassInfo;
 import com.rokid.alliance.base.model.RKFaceDO;
 import com.rokid.alliance.base.model.RKFaceModel;
@@ -148,7 +149,13 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
      */
     private void initOfflineGlass() {
         BaseLibrary.initialize(getApplication());
+
+
         RKGlassUI.getInstance().initGlassUI(getApplicationContext());
+        // 单人离线识别
+        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_SINGLE_RECOGNIZE, false);
+        // 多人离线识别
+//        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, false);
 
         // 初始化usb连接设备，mpreView不能为空，如不想见可设置view为1dp大小
         RKGlassDevice.RKGlassDeviceBuilder.buildRKGlassDevice().build().initUsbDevice(this, findViewById(R.id.uvc_preview), new OnGlassConnectListener() {
@@ -345,5 +352,6 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
         RKAlliance.getInstance().releaseFaceSdk();
         RKGlassDevice.getInstance().removeOnPreviewFrameListener(onPreviewFrameListener);
         RKGlassDevice.getInstance().deInit();
+        RKGlassUI.getInstance().removeGlassUI();
     }
 }

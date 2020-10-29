@@ -58,15 +58,14 @@ public class DemoRKOnlineActivity extends AppCompatActivity {
 
         BaseLibrary.initialize(getApplication());
 
+        RKGlassUI.getInstance().initGlassUI(getApplicationContext());
+
         // 设置识别类型,以及是否为在线模式
         // 识别类型支持：：
         // RecognizeType.IS_SINGLE_RECOGNIZE：单人识别
         // RecognizeType.IS_MULTI_RECOGNIZE：多人识别
         // RecognizeType.IS_PLATE_RECOGNIZE：车牌识别
-
-        //首次调用必须在initGlassUI函数被调用之前 后续切换识别模式正常调用即可
         RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, true);
-        RKGlassUI.getInstance().initGlassUI(getApplicationContext());
 
         // 加载人脸模型
         RKAlliance.getInstance().loadFaceModel(getApplicationContext(), null);
