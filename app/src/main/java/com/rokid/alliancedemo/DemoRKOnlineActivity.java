@@ -121,6 +121,7 @@ public class DemoRKOnlineActivity extends AppCompatActivity {
 
         RKGlassDevice.getInstance().deInit();
         OnlineRecgHelper.getInstance().init(null);
+        RKGlassUI.getInstance().removeGlassUI();
     }
 
 }

@@ -19,6 +19,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.reflect.TypeToken;
 import com.jiangdg.usbcamera.RKGlassDevice;
 import com.jiangdg.usbcamera.callback.OnGlassConnectListener;
 import com.rokid.alliance.base.BaseLibrary;
@@ -28,12 +31,15 @@ import com.rokid.alliance.base.model.RKFaceDO;
 import com.rokid.alliance.base.model.RKFaceModel;
 import com.rokid.alliance.base.model.face.database.UserInfo;
 import com.rokid.alliance.base.pc.ErrorCode;
+import com.rokid.alliance.base.pc.bean.BatchPersons;
+import com.rokid.alliance.base.pc.bean.DeployInfo;
 import com.rokid.alliance.base.pc.bean.DeployTask;
 import com.rokid.alliance.base.pc.bean.DeployTaskListInfo;
 import com.rokid.alliance.base.pc.bean.ExtractFeatResult;
 import com.rokid.alliance.base.pc.bean.FeatFileInfo;
 import com.rokid.alliance.base.pc.bean.Person;
 import com.rokid.alliance.base.utils.BitmapUtils;
+import com.rokid.alliancedemo.util.FileManager;
 import com.rokid.alliancedemo.util.Utils;
 import com.rokid.glass.m_glass.RKGlassUI;
 import com.rokid.mcui.utils.Logger;
@@ -44,6 +50,8 @@ import com.rokid.mobile.magic.database.FaceDataManager;
 import com.rokid.mobile.magic.database.FaceIdManager;
 import com.serenegiant.usb.common.AbstractUVCCameraHandler;
 
+import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,6 +149,11 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
         findViewById(R.id.btn_delete).setOnClickListener(v -> {
             deleteData();
         });
+
+        findViewById(R.id.btn_batch_add).setOnClickListener(v -> {
+            // 批量添加数据
+            batchAddData();
+        });
     }
 
 
@@ -223,9 +236,12 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
         StringBuffer stringBuffer = new StringBuffer();
         for (DeployTask deployTask : deployTasks) {
             // 查询到的姓名,身份证号
-            stringBuffer.append(deployTask.getName() + "," + deployTask.getCardNo() +  "\n");
+            stringBuffer.append(deployTask.getName() + "," + deployTask.getCardNo() + "\n");
             // 根据特征id 来返回用户图片；【特征id为人脸图片存入数据库时自动生成的】
             Bitmap bitmap = FaceIdManager.getInstance().getUserImageByFid(deployTask.getCoverId());
+            if (bitmap != null) {
+                imageHead.setImageBitmap(bitmap);
+            }
         }
         tvDBdata.setText("数据库查询结果为：：\n " + stringBuffer.toString());
     }
@@ -237,7 +253,7 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
         // demo默认只修改第一条数据
         DeployTaskListInfo deployTaskList = FaceDataManager.getInstance().getDeployTaskListByOffset(null, 0, 1);
         List<DeployTask> deployTasks = deployTaskList.getDeployTasks();
-        if (deployTasks.size()>0){
+        if (deployTasks.size() > 0) {
             Person person = new Person();
             person.setName("新名字");
             person.setCardNo("77");
@@ -260,13 +276,13 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
 
         DeployTaskListInfo deployTaskList = FaceDataManager.getInstance().getDeployTaskListByOffset(null, 0, 1);
         List<DeployTask> deployTasks = deployTaskList.getDeployTasks();
-        for (DeployTask item: deployTasks) {
+        for (DeployTask item : deployTasks) {
             // uuid 为数据添加时自动生成的唯一随机id；
             deleteUidList.add(item.getId());
         }
 
         ErrorCode errorCode = FaceDataManager.getInstance().deletePersons(deleteUidList);
-        if (errorCode.getCode() == 0){
+        if (errorCode.getCode() == 0) {
             Toast.makeText(this, "离线人脸数据删除成功", Toast.LENGTH_LONG).show();
             queryData();
         }
@@ -309,6 +325,34 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, extractFeatResult.getResultMsg() + "", Toast.LENGTH_LONG).show();
         }
+    }
+
+
+    /**
+     * 批量添加人脸数据
+     */
+    private void batchAddData() {
+        // 此为mock布控包数据
+        DeployInfo deployInfo = new DeployInfo();
+        deployInfo.setName("布控包名");
+        deployInfo.setExpireTime(System.currentTimeMillis() + 60 * 60 * 24 * 7 * 1000); // 布控包有效期
+        deployInfo.setNewFriendAlarm(true);
+        deployInfo.setNewFriendDesc("");
+
+        // 人脸图片压缩文件  图片名称需要与Json文件中的图片名一致。 此外，请注意如果images.zip文件是有images文件夹压缩的，则json中图片路径需要添加images/xxx.jpg
+        String fileName = "images.zip";
+        String newFilePath = this.getFilesDir().getAbsolutePath() + File.separator + fileName;
+        Logger.i("FileManager:: newFilePath:" + newFilePath);
+
+        FileManager.copyAssetsFile2Phone(this, fileName, newFilePath);
+
+        String batchDataJson = FileManager.getJson(this, "batchPerson.json");
+
+        List<BatchPersons> batchPersonsList = new Gson().fromJson(batchDataJson, new TypeToken<List<BatchPersons>>() {
+        }.getType());
+
+        // 批量添加人脸数据信息
+        FaceDataManager.getInstance().addPersons(deployInfo, newFilePath, batchPersonsList, true);
     }
 
 
