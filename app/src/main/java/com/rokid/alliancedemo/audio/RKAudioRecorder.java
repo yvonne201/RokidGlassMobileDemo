@@ -5,6 +5,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
 
+import com.rokid.alliance.base.agc.RKAgc;
 import com.rokid.alliancedemo.util.FileManager;
 import com.rokid.mcui.utils.Logger;
 
@@ -21,7 +22,7 @@ public class RKAudioRecorder implements IRKAudioRecord {
     public static final int AUDIO_SOURCE = MediaRecorder.AudioSource.MIC;
     public static final int AUDIO_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_STEREO;
     public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
-    public static final int AUDIO_MIN_BUFFER_SIZE = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_SIZE, AUDIO_CHANNEL_CONFIG, AUDIO_FORMAT);
+    public static final int AUDIO_MIN_BUFFER_SIZE = 1280;
     private AudioRecord mAudioRecord;
     private Thread mRecordThread;
     private VoiceCallback mCallback;
@@ -29,6 +30,7 @@ public class RKAudioRecorder implements IRKAudioRecord {
     private AtomicBoolean isPause = new AtomicBoolean(false);
     private AtomicBoolean isDebug = new AtomicBoolean(false);
     public static final String DEBUG_FILE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/debug_audio.pcm";
+    private RKAgc rkAgc;
 
     private final Object syncObject = new Object();
 
@@ -48,19 +50,30 @@ public class RKAudioRecorder implements IRKAudioRecord {
         byte[] buffer = new byte[AUDIO_MIN_BUFFER_SIZE];
         mAudioRecord.startRecording();
         while (!isReleased.get()) {
-            int length = mAudioRecord.read(buffer, 0, AUDIO_MIN_BUFFER_SIZE);
-            if (length == AudioRecord.ERROR_INVALID_OPERATION || length == AudioRecord.ERROR_BAD_VALUE) {
+            int readBytes = mAudioRecord.read(buffer, 0, AUDIO_MIN_BUFFER_SIZE);
+            if (readBytes == AudioRecord.ERROR_INVALID_OPERATION || readBytes == AudioRecord.ERROR_BAD_VALUE) {
                 continue;
+            }
+
+            if (readBytes < AUDIO_MIN_BUFFER_SIZE) {
+                readBytes = readBytes / 640 * 640;
+            }
+            Logger.e("encodeBytes:", String.valueOf(readBytes));
+            byte[] output = new byte[readBytes];
+            int result = rkAgc.processData(buffer, 2, 320, output);
+            if (result != 0) {
+                Logger.e("agc process data frame count:", String.valueOf(result));
             }
             if (isDebug.get()) {
                 if (null == mFileManager) {
                     Logger.d("debug file is ", DEBUG_FILE_NAME);
                     mFileManager = new FileManager(DEBUG_FILE_NAME);
                 }
-                mFileManager.saveFileData(buffer);
+
+                mFileManager.saveFileData(output);
             }
             if (null != mCallback) {
-                mCallback.onVoiceData(buffer, length);
+                mCallback.onVoiceData(output, readBytes);
             }
 
         }
@@ -83,6 +96,11 @@ public class RKAudioRecorder implements IRKAudioRecord {
             mRecordThread = new Thread(mRecordTask);
             mRecordThread.start();
         }
+        if (null == rkAgc){
+            rkAgc = new RKAgc();
+            rkAgc.initAgc(AUDIO_SAMPLE_SIZE, 160, 2);
+            rkAgc.setAgcConfig(20, 2);
+        }
     }
 
     @Override
@@ -104,6 +122,10 @@ public class RKAudioRecorder implements IRKAudioRecord {
             }
         }
 
+        if (null != rkAgc){
+            rkAgc.releaseAgc();
+            rkAgc = null;
+        }
     }
 
     public void startDebug() {
