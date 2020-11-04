@@ -181,7 +181,7 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
 
         RKGlassUI.getInstance().initGlassUI(getApplicationContext());
         // 单人离线识别
-        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, false);
+        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_SINGLE_RECOGNIZE, false);
         // 多人离线识别
 //        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, false);
     }
