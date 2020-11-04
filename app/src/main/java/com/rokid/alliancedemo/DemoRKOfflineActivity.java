@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.service.autofill.UserData;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -163,13 +164,6 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
     private void initOfflineGlass() {
         BaseLibrary.initialize(getApplication());
 
-
-        RKGlassUI.getInstance().initGlassUI(getApplicationContext());
-        // 单人离线识别
-        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_SINGLE_RECOGNIZE, false);
-        // 多人离线识别
-//        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, false);
-
         // 初始化usb连接设备，mpreView不能为空，如不想见可设置view为1dp大小
         RKGlassDevice.RKGlassDeviceBuilder.buildRKGlassDevice().build().initUsbDevice(this, findViewById(R.id.uvc_preview), new OnGlassConnectListener() {
             @Override
@@ -183,26 +177,13 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
             }
         });
 
-        // 加载人脸模型
-        RKAlliance.getInstance().loadFaceModel(getApplicationContext(), new PreparedListener() {
-            @Override
-            public void onPrepared() {
-                // 初始化人脸数据库
-                FaceIdManager.getInstance().init(getApplicationContext());
-                FaceDataManager.getInstance().init(getApplicationContext());
-            }
-        });
+        reloadSdk();
 
-        // 初始化人脸SDK
-        RKAlliance.getInstance().initFaceSDK(getApplicationContext(), Utils.getInstance().getRoi(), new PreparedListener() {
-            @Override
-            public void onPrepared() {
-                RKGlassDevice.getInstance().setOnPreviewFrameListener(onPreviewFrameListener);
-            }
-        });
-
-        // 注册人脸识别监听
-        RKAlliance.getInstance().registerFaceListener(faceCallback);
+        RKGlassUI.getInstance().initGlassUI(getApplicationContext());
+        // 单人离线识别
+        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, false);
+        // 多人离线识别
+//        RKGlassUI.getInstance().recogSettingChanged(RecognizeType.IS_MULTI_RECOGNIZE, false);
     }
 
     /**
@@ -322,6 +303,8 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
             Toast.makeText(this, "离线人脸数据添加成功", Toast.LENGTH_LONG).show();
             // 重新加载数据模型
             reloadSdk();
+
+
         } else {
             Toast.makeText(this, extractFeatResult.getResultMsg() + "", Toast.LENGTH_LONG).show();
         }
@@ -361,20 +344,23 @@ public class DemoRKOfflineActivity extends AppCompatActivity {
      */
     private void reloadSdk() {
         RKAlliance.getInstance().releaseFaceSdk();
+
+        // 加载人脸模型,在loadFaceModel 中会初始化人脸数据库
         RKAlliance.getInstance().loadFaceModel(getApplicationContext(), new PreparedListener() {
             @Override
             public void onPrepared() {
-
             }
         });
 
+        // 初始化人脸SDK
         RKAlliance.getInstance().initFaceSDK(getApplicationContext(), Utils.getInstance().getRoi(), new PreparedListener() {
             @Override
             public void onPrepared() {
-
+                RKGlassDevice.getInstance().setOnPreviewFrameListener(onPreviewFrameListener);
             }
         });
 
+        // 注册人脸识别监听
         RKAlliance.getInstance().registerFaceListener(faceCallback);
     }
 
